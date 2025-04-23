@@ -5,17 +5,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.password.CompromisedPasswordChecker;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
-import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.password.HaveIBeenPwnedRestApiPasswordChecker;
-
-import javax.sql.DataSource;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -24,11 +17,12 @@ public class SecurityConfiguration {
 
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+        http.csrf(csrfConfig -> csrfConfig.disable());
         /*http.authorizeHttpRequests((requests) -> requests.anyRequest().denyAll());*/
         /*http.authorizeHttpRequests((requests) -> requests.anyRequest().denyAll());*/
         http.authorizeHttpRequests((requests) -> requests
                 .requestMatchers("/yourSold", "/yourAccount", "/credits", "/yourCard").authenticated()
-                .requestMatchers("/notifications", "/error", "/contact").permitAll()
+                .requestMatchers("/notifications", "/error", "/contact", "/register").permitAll()
                 .anyRequest().authenticated());
         /*http.formLogin(httpSecurityFormLoginConfigurer -> httpSecurityFormLoginConfigurer.disable());
         http.httpBasic(httpSecurityHttpBasicConfigurer -> httpSecurityHttpBasicConfigurer.disable());*/
@@ -37,13 +31,13 @@ public class SecurityConfiguration {
         return http.build();
     }
 
-    @Bean
-    public UserDetailsService userDetailsService(DataSource dataSource) {
-      UserDetails user =User.withUsername("user").password("{noop}User@12345").authorities("read").build();
-      UserDetails admin = User.withUsername("admin").password("{bcrypt}$2a$12$lpcEhhwcxmRYLccob6tZRuU/1fUuapZhvqb4ojrHq3.Un5usPgoaq").authorities("admin").build();
-      return new InMemoryUserDetailsManager(user, admin);
-      return new JdbcUserDetailsManager(dataSource);
-    }
+//    @Bean
+//    public UserDetailsService userDetailsService(DataSource dataSource) {
+//      UserDetails user =User.withUsername("user").password("{noop}User@12345").authorities("read").build();
+//      UserDetails admin = User.withUsername("admin").password("{bcrypt}$2a$12$lpcEhhwcxmRYLccob6tZRuU/1fUuapZhvqb4ojrHq3.Un5usPgoaq").authorities("admin").build();
+//      //return new InMemoryUserDetailsManager(user, admin);
+//      return new JdbcUserDetailsManager(dataSource);
+//    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {

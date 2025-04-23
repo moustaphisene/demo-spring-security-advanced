@@ -11,7 +11,7 @@ create unique index ix_auth_username on authorities (username,authority);
 INSERT  INTO users VALUES ('user', '{noop}65z3,G4Uz[b.Un', '1') ON CONFLICT (username) DO NOTHING;
 INSERT  INTO authorities VALUES ('user', 'read') ON CONFLICT (username, authority) DO NOTHING;
 
-INSERT  INTO users VALUES ('admin', '{bcrypt}$2a$12$1Kg36/DxAC.ZuIG9EnJwCOJGadmtVIJYnHCxQVUL7LjIREGtlPDti', '1') ON CONFLICT (username) DO NOTHING;
+INSERT  INTO users VALUES ('admin', '{bcrypt}$2a$12$iONr95CtVRPP13nhjJ0RHOmekhQKoZRuHN8q9WvszJnhMNv1zWd3e', '1') ON CONFLICT (username) DO NOTHING;
 INSERT  INTO authorities VALUES ('admin', 'admin') ON CONFLICT (username, authority) DO NOTHING;
 
 --SELECT * FROM users WHERE username = 'user';
@@ -34,4 +34,4 @@ CREATE TABLE customer (
 
 INSERT INTO customer (email, pwd, role) VALUES
                                             ('user@demo.com', '{noop}65z3,G4Uz[b.Un', 'read'),
-                                            ('admin@demo.com', '{bcrypt}$2a$12$VtshWPorLASnVio8TICBPO4TroEzxyBHmMyKCJ1fZWWdxBiEQQAbW', 'admin');
+                                            ('admin@demo.com', '{bcrypt}$2a$12$iONr95CtVRPP13nhjJ0RHOmekhQKoZRuHN8q9WvszJnhMNv1zWd3e', 'admin');
