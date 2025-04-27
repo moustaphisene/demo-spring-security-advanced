@@ -21,7 +21,10 @@ public class SecurityConfiguration {
 
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-        http.sessionManagement(smc-> smc.invalidSessionUrl("/sessionInvalid").maximumSessions(3).maxSessionsPreventsLogin(true));
+
+        //http.sessionManagement(smc-> smc.sessionFixation(sfc->sfc.newSession())
+        http.sessionManagement(smc-> smc.sessionFixation(sfc->sfc.newSession())
+                .invalidSessionUrl("/sessionInvalid").maximumSessions(3).maxSessionsPreventsLogin(true));
         http.requiresChannel(rrc-> rrc.anyRequest().requiresInsecure()); // HTTP
         http.csrf(csrfConfig -> csrfConfig.disable());
         /*http.authorizeHttpRequests((requests) -> requests.anyRequest().denyAll());*/
