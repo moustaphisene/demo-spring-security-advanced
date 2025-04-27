@@ -21,13 +21,14 @@ public class SecurityProdConfiguration {
 
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+        http.sessionManagement(smc-> smc.invalidSessionUrl("/sessionInvalid").maximumSessions(1).maxSessionsPreventsLogin(true));
         http.requiresChannel(rcc-> rcc.anyRequest().requiresSecure()); //HTTPS
         http.csrf(csrfConfig -> csrfConfig.disable());
         /*http.authorizeHttpRequests((requests) -> requests.anyRequest().denyAll());*/
         /*http.authorizeHttpRequests((requests) -> requests.anyRequest().denyAll());*/
         http.authorizeHttpRequests((requests) -> requests
                 .requestMatchers("/yourSold", "/yourAccount", "/credits", "/yourCard").authenticated()
-                .requestMatchers("/notifications", "/error", "/contact", "/register").permitAll()
+                .requestMatchers("/notifications", "/error", "/contact", "/register","/sessionInvalid").permitAll()
                 .anyRequest().authenticated());
         /*http.formLogin(httpSecurityFormLoginConfigurer -> httpSecurityFormLoginConfigurer.disable());
         http.httpBasic(httpSecurityHttpBasicConfigurer -> httpSecurityHttpBasicConfigurer.disable());*/
