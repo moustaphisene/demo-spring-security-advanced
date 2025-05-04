@@ -23,6 +23,7 @@ public class SecurityConfiguration {
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
 
         //http.sessionManagement(smc-> smc.sessionFixation(sfc->sfc.newSession())
+        //http.sessionManagement((session) -> session.sessionFixation((sessionFixation) -> sessionFixation.newSession()));
         http.sessionManagement(smc-> smc.sessionFixation(sfc->sfc.newSession())
                 .invalidSessionUrl("/sessionInvalid").maximumSessions(3).maxSessionsPreventsLogin(true));
         http.requiresChannel(rrc-> rrc.anyRequest().requiresInsecure()); // HTTP

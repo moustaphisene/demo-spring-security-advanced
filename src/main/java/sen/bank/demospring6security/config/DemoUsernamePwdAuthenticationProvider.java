@@ -22,6 +22,7 @@ public class DemoUsernamePwdAuthenticationProvider implements AuthenticationProv
         String username = authentication.getName();
         String pwd = authentication.getCredentials().toString();
         UserDetails userDetails = demoUserDetailsService.loadUserByUsername(username);
+
 //        if (passwordEncoder.matches(pwd, userDetails.getPassword())){
 //            //Fetch information detail and perform validation to check by condition
      return new UsernamePasswordAuthenticationToken(username, pwd, authentication.getAuthorities());

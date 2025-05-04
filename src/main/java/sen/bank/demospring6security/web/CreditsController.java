@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class CreditsController {
 
-    @GetMapping("/credits")
+    @GetMapping("/yourCredits")
     public String getCreditsDetails(){
         return "your credits details from database!";
 
