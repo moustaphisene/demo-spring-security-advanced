@@ -5,6 +5,7 @@ import sen.bank.demospring6security.repository.NoticeRepository;
 
 @Service
 public class NoticeService {
+
     private final NoticeRepository noticeRepository;
 
     public NoticeService(NoticeRepository noticeRepository) {

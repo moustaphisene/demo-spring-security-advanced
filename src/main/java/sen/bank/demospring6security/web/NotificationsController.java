@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 @RestController
 @RequiredArgsConstructor
 public class NotificationsController {
+
     private final NoticeRepository noticeRepository;
 
     @GetMapping("/notifications")
@@ -27,7 +28,7 @@ public class NotificationsController {
 //                .body(notifications);
 //    }
     public ResponseEntity<List<Notice>> getNotices() {
-        List<Notice> notices = noticeRepository.findAllActiveNotices();
+        List<Notice> notices = noticeRepository.findAllActiveNotice();
         if (notices != null) {
             return ResponseEntity.ok()
                     .cacheControl(CacheControl.maxAge(60, TimeUnit.SECONDS))
