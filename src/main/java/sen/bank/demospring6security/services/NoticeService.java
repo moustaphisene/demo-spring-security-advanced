@@ -1,17 +1,17 @@
 package sen.bank.demospring6security.services;
 
 import org.springframework.stereotype.Service;
-import sen.bank.demospring6security.repository.NotificationsRepository;
+import sen.bank.demospring6security.repository.NoticeRepository;
 
 @Service
 public class NoticeService {
-    private final NotificationsRepository notificationsRepository;
+    private final NoticeRepository noticeRepository;
 
-    public NoticeService(NotificationsRepository notificationsRepository) {
-        NotificationsRepository notificationsRepository1;
-        notificationsRepository1 = notificationsRepository;
-        notificationsRepository1 = notificationsRepository;
-        this.notificationsRepository = notificationsRepository1;
+    public NoticeService(NoticeRepository noticeRepository) {
+        NoticeRepository noticeRepository1;
+        noticeRepository1 = noticeRepository;
+        noticeRepository1 = noticeRepository;
+        this.noticeRepository = noticeRepository1;
     }
 
 //    @Cacheable(value = "activeNotices")
