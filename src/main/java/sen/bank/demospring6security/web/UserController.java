@@ -3,12 +3,16 @@ package sen.bank.demospring6security.web;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import sen.bank.demospring6security.entity.Mandate;
 import sen.bank.demospring6security.repository.MandateRepository;
+
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -37,5 +41,11 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).
                     body("An exception occured:" + e.getMessage());
         }
+    }
+
+    @RequestMapping("/user")
+    public Mandate getUserDetailsAfterLogin(Authentication authentication) {
+        Optional<Mandate> optionalCustomer = MandateRepository.findByEmail(authentication.getName());
+        return optionalCustomer.orElse(null);
     }
 }
