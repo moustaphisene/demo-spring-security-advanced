@@ -19,7 +19,6 @@ public class NotificationsController {
     public String getNotifications(){
         return "your notifications from database!";
 
-
     }
 
 }
