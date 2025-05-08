@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import sen.bank.demospring6security.entity.Notice;
 import sen.bank.demospring6security.repository.NoticeRepository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -19,16 +20,8 @@ public class NotificationsController {
     private final NoticeRepository noticeRepository;
 
     @GetMapping("/notifications")
-//    @Cacheable(value = "activeNotifications") //Clé de la cache
-//    public ResponseEntity<List<Notification>> getNotifications() {
-//        List<Notification> notifications = notificationRepository.findAllActiveNotifications();
-//        return ResponseEntity
-//                .ok()
-//                .cacheControl(CacheControl.maxAge(60, TimeUnit.MINUTES))
-//                .body(notifications);
-//    }
     public ResponseEntity<List<Notice>> getNotices() {
-        List<Notice> notices = noticeRepository.findAllActiveNotice();
+        List<Notice> notices = noticeRepository.findAllActiveNotice(new Date());
         if (notices != null) {
             return ResponseEntity.ok()
                     .cacheControl(CacheControl.maxAge(60, TimeUnit.SECONDS))
@@ -37,5 +30,14 @@ public class NotificationsController {
             return null;
         }
     }
+
+    //    @Cacheable(value = "activeNotifications") //Clé de la cache
+//    public ResponseEntity<List<Notification>> getNotifications() {
+//        List<Notification> notifications = notificationRepository.findAllActiveNotifications();
+//        return ResponseEntity
+//                .ok()
+//                .cacheControl(CacheControl.maxAge(60, TimeUnit.MINUTES))
+//                .body(notifications);
+//    }
 
 }
