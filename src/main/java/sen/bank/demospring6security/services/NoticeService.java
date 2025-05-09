@@ -35,18 +35,4 @@ public class NoticeService {
         noticeRepository.deleteById(noticeId);
     }
 
-//    @Cacheable(value = "activeNotices")
-//    public List<Notifications> getAllActiveNotices() {
-//        return noticeRepository.findAllActiveNotices();
-//    }
-//
-//    @CacheEvict(value = "activeNotices", allEntries = true)
-//    public Notifications createOrUpdateNotice(Notice notice) {
-//        return noticeRepository.save(notice);
-//    }
-//
-//    @CacheEvict(value = "activeNotices", allEntries = true)
-//    public void deleteNotice(Long noticeId) {
-//        noticeRepository.deleteById(noticeId);
-//    }
 }
