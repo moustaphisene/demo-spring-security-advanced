@@ -11,10 +11,14 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.password.HaveIBeenPwnedRestApiPasswordChecker;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import sen.bank.demospring6security.exceptions.CustomAccessDeniedHandler;
 import sen.bank.demospring6security.exceptions.CustomBasicAuthenticationEntryPoint;
+import sen.bank.demospring6security.filter.CsrfCookieFilter;
 
 import java.util.Collections;
 
@@ -26,6 +30,7 @@ public class SecurityProdConfiguration {
 
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+        CsrfTokenRequestAttributeHandler csrfTokenRequestAttributeHandler = new CsrfTokenRequestAttributeHandler();
 
         http.cors(corsConfig ->corsConfig.configurationSource(new CorsConfigurationSource() {
                     @Override
@@ -38,15 +43,20 @@ public class SecurityProdConfiguration {
                         config.setMaxAge(3600L);
                         return config;
                     }
-                }))
-                .sessionManagement(smc-> smc.invalidSessionUrl("/sessionInvalid").maximumSessions(1).maxSessionsPreventsLogin(true));
+                }));
+        http.csrf(csrfConfig -> csrfConfig
+                .csrfTokenRequestHandler(csrfTokenRequestAttributeHandler)
+                .ignoringRequestMatchers("/contact", "/register")
+                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()));
+        http.addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class);
+                //.sessionManagement(smc-> smc.invalidSessionUrl("/sessionInvalid").maximumSessions(1).maxSessionsPreventsLogin(true));
         http.requiresChannel(rcc-> rcc.anyRequest().requiresSecure()); //HTTPS
         //http.csrf(csrfConfig -> csrfConfig.disable());
         /*http.authorizeHttpRequests((requests) -> requests.anyRequest().denyAll());*/
         /*http.authorizeHttpRequests((requests) -> requests.anyRequest().denyAll());*/
         http.authorizeHttpRequests((requests) -> requests
                 .requestMatchers("/yourSold", "/yourAccount", "/credits", "/yourCard","/user").authenticated()
-                .requestMatchers("/notifications", "/error", "/contact", "/register","/sessionInvalid").permitAll()
+                .requestMatchers("/notifications", "/error","/sessionInvalid").permitAll()
                 .anyRequest().authenticated());
         /*http.formLogin(httpSecurityFormLoginConfigurer -> httpSecurityFormLoginConfigurer.disable());
         http.httpBasic(httpSecurityHttpBasicConfigurer -> httpSecurityHttpBasicConfigurer.disable());*/

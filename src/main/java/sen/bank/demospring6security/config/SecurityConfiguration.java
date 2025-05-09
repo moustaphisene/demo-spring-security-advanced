@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.password.CompromisedPasswordChecker;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -32,9 +33,11 @@ public class SecurityConfiguration {
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         //
         CsrfTokenRequestAttributeHandler csrfTokenRequestAttributeHandler = new CsrfTokenRequestAttributeHandler();
+        http.securityContext(contextConfig ->contextConfig.requireExplicitSave(false))
+                .sessionManagement(sm-> sm.sessionCreationPolicy(SessionCreationPolicy.ALWAYS));
         //http.sessionManagement(smc-> smc.sessionFixation(sfc->sfc.newSession());
        // http.sessionManagement((session) -> session.sessionFixation((sessionFixation) -> sessionFixation.newSession()));
-        http.securityContext(contextConfig ->contextConfig.requireExplicitSave(false));
+
                 //.sessionManagement(sessionConfig->sessionConfig.sessionCreationPolicy(SessionCreationPolicy.ALWAYS));
         http.cors(corsConfig ->corsConfig.configurationSource(new CorsConfigurationSource() {
                     @Override
@@ -54,13 +57,14 @@ public class SecurityConfiguration {
         //Configurations  génération du jeton CSRF pour la toute première fois après l'opération de connexion.
         http.csrf(csrfConfig -> csrfConfig
                 .csrfTokenRequestHandler(csrfTokenRequestAttributeHandler)
+                .ignoringRequestMatchers("/contact", "/register")
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()));
         http.addFilterAfter(new CsrfCookieFilter(),BasicAuthenticationFilter.class);
         /*http.authorizeHttpRequests((requests) -> requests.anyRequest().denyAll());*/
         /*http.authorizeHttpRequests((requests) -> requests.anyRequest().denyAll());*/
         http.authorizeHttpRequests((requests) -> requests
                 .requestMatchers("/yourSold", "/yourAccount", "/credits", "/yourCard","/user").authenticated()
-                .requestMatchers("/notifications", "/error", "/contact", "/register","/sessionInvalid").permitAll()
+                .requestMatchers("/notifications", "/error", "/sessionInvalid").permitAll()
                 .anyRequest().authenticated());
         /*http.formLogin(httpSecurityFormLoginConfigurer -> httpSecurityFormLoginConfigurer.disable());
         http.httpBasic(httpSecurityHttpBasicConfigurer -> httpSecurityHttpBasicConfigurer.disable());*/
