@@ -13,6 +13,7 @@ import sen.bank.demospring6security.repository.MandateRepository;
 
 import java.util.List;
 
+
 @RequiredArgsConstructor
 @Service
 public class DemoUserDetailsService  implements UserDetailsService {
@@ -25,7 +26,8 @@ public class DemoUserDetailsService  implements UserDetailsService {
      */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Mandate mandate = MandateRepository.findByEmail(username).orElseThrow(() -> new
+        Mandate mandate = mandateRepository.findByEmail(username)
+                .orElseThrow(() -> new
                 UsernameNotFoundException("User not found: " + username));
         List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(mandate.getRole()));
 

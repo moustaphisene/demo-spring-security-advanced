@@ -5,12 +5,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import sen.bank.demospring6security.entity.Mandate;
 import sen.bank.demospring6security.repository.MandateRepository;
+import sen.bank.demospring6security.services.MandateService;
 
 import java.util.Optional;
 
@@ -19,6 +20,7 @@ import java.util.Optional;
 public class UserController {
     private final MandateRepository mandateRepository;
     private final PasswordEncoder passwordEncoder;
+    private final MandateService mandateService;
 
 
     @PostMapping("/register")
@@ -43,9 +45,33 @@ public class UserController {
         }
     }
 
-    @RequestMapping("/user")
-    public Mandate getUserDetailsAfterLogin(Authentication authentication) {
-        Optional<Mandate> optionalCustomer = MandateRepository.findByEmail(authentication.getName());
-        return optionalCustomer.orElse(null);
+//    @RequestMapping("/user")
+//    public Mandate getUserDetailsAfterLogin(Authentication authentication) {
+//        Optional<Mandate> optionalMandate = MandateRepository.findByEmail(authentication.getName());
+//        return optionalMandate.orElse(null);
+//    }
+
+//    @GetMapping("/user")
+//    public ResponseEntity<?> getUserDetailsAfterLogin(Authentication authentication) {
+//        return mandateRepository.findByEmail(authentication.getName())
+//                .map(ResponseEntity::ok)
+//                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND)
+//                        .body("User not found with email: " + authentication.getName()));
+//    }
+
+    @GetMapping("/user")
+    public ResponseEntity<?> getUserDetailsAfterLogin(Authentication authentication) {
+        Optional<Mandate> optional = mandateRepository.findByEmail(authentication.getName());
+
+        if (optional.isPresent()) {
+            return ResponseEntity.ok(optional.get());
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("User not found with email: " + authentication.getName());
+        }
     }
+
+
+
+
 }

@@ -11,10 +11,14 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.password.HaveIBeenPwnedRestApiPasswordChecker;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import sen.bank.demospring6security.exceptions.CustomAccessDeniedHandler;
 import sen.bank.demospring6security.exceptions.CustomBasicAuthenticationEntryPoint;
+import sen.bank.demospring6security.filter.CsrfCookieFilter;
 
 import java.util.Collections;
 
@@ -26,9 +30,12 @@ public class SecurityConfiguration {
 
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-
-        //http.sessionManagement(smc-> smc.sessionFixation(sfc->sfc.newSession())
-        //http.sessionManagement((session) -> session.sessionFixation((sessionFixation) -> sessionFixation.newSession()));
+        //
+        CsrfTokenRequestAttributeHandler csrfTokenRequestAttributeHandler = new CsrfTokenRequestAttributeHandler();
+        //http.sessionManagement(smc-> smc.sessionFixation(sfc->sfc.newSession());
+       // http.sessionManagement((session) -> session.sessionFixation((sessionFixation) -> sessionFixation.newSession()));
+        http.securityContext(contextConfig ->contextConfig.requireExplicitSave(false));
+                //.sessionManagement(sessionConfig->sessionConfig.sessionCreationPolicy(SessionCreationPolicy.ALWAYS));
         http.cors(corsConfig ->corsConfig.configurationSource(new CorsConfigurationSource() {
                     @Override
                     public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
@@ -41,10 +48,14 @@ public class SecurityConfiguration {
                         return config;
                     }
                 }) );
-//                .sessionManagement(smc-> smc.sessionFixation(sfc->sfc.newSession())
-//                .invalidSessionUrl("/sessionInvalid").maximumSessions(3).maxSessionsPreventsLogin(true));
+        //http.sessionManagement(smc-> smc.sessionFixation(sfc->sfc.newSession())
+                //.invalidSessionUrl("/sessionInvalid").maximumSessions(3).maxSessionsPreventsLogin(true));
         http.requiresChannel(rrc-> rrc.anyRequest().requiresInsecure()); // HTTP
-        //http.csrf(csrfConfig -> csrfConfig.disable());
+        //Configurations  génération du jeton CSRF pour la toute première fois après l'opération de connexion.
+        http.csrf(csrfConfig -> csrfConfig
+                .csrfTokenRequestHandler(csrfTokenRequestAttributeHandler)
+                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()));
+        http.addFilterAfter(new CsrfCookieFilter(),BasicAuthenticationFilter.class);
         /*http.authorizeHttpRequests((requests) -> requests.anyRequest().denyAll());*/
         /*http.authorizeHttpRequests((requests) -> requests.anyRequest().denyAll());*/
         http.authorizeHttpRequests((requests) -> requests

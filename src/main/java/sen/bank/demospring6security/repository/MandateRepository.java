@@ -6,7 +6,8 @@ import sen.bank.demospring6security.entity.Mandate;
 import java.util.Optional;
 
 public interface MandateRepository extends CrudRepository<Mandate, Long> {
-    static Optional<Mandate> findByEmail(String email) {
-        return null;
-    }
+    Optional<Mandate> findByEmail(String email) ;
+       //
+
 }
+
