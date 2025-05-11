@@ -23,7 +23,7 @@ const routes: Routes = [
   { path: 'yourAccount', component: AccountComponent, canActivate: [AuthActivateRouteGuard]},
   { path: 'yourSold', component: BalanceComponent, canActivate: [AuthActivateRouteGuard]},
   { path: 'yourCredits', component: LoansComponent, canActivate: [AuthActivateRouteGuard]},
-  { path: 'YourCard', component: CardsComponent, canActivate: [AuthActivateRouteGuard]}
+  { path: 'yourCard', component: CardsComponent, canActivate: [AuthActivateRouteGuard]}
 ];
 
 @NgModule({

@@ -12,6 +12,7 @@ import sen.bank.demospring6security.entity.Mandate;
 import sen.bank.demospring6security.repository.MandateRepository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @RequiredArgsConstructor
@@ -29,7 +30,10 @@ public class DemoUserDetailsService  implements UserDetailsService {
         Mandate mandate = mandateRepository.findByEmail(username)
                 .orElseThrow(() -> new
                 UsernameNotFoundException("User not found: " + username));
-        List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(mandate.getRole()));
+        List<GrantedAuthority> authorities =mandate.getAuthorities().stream().map(authority -> new
+                SimpleGrantedAuthority(authority.getName())).collect(Collectors.toList());
+        //List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(mandate.getAuthorities()));
+       // List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(mandate.getRole()));
 
         return new User(mandate.getEmail(), mandate.getPwd(), authorities);
     }

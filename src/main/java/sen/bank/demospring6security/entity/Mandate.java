@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.Set;
 
 @Entity
 @Table(name = "customer")
@@ -30,6 +31,11 @@ public class Mandate {
     @Column(name = "create_dt")
     @JsonIgnore
     private Date createDt;
+
+    @OneToMany(mappedBy = "mandate", fetch = FetchType.EAGER)
+    @JsonIgnore
+    private Set<Authority> authorities;
+
 
 
 
