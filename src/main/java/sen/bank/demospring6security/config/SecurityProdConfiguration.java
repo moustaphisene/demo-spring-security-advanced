@@ -36,7 +36,7 @@ public class SecurityProdConfiguration {
                     @Override
                     public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
                         CorsConfiguration config = new CorsConfiguration();
-                        config.setAllowedOrigins(Collections.singletonList("http://localhost:4200")); //Front Angular UI
+                        config.setAllowedOrigins(Collections.singletonList("https://localhost:4200")); //Front Angular UI
                         config.setAllowedMethods(Collections.singletonList("*"));
                         config.setAllowCredentials(true);
                         config.setAllowedHeaders(Collections.singletonList("*"));
@@ -55,7 +55,14 @@ public class SecurityProdConfiguration {
         /*http.authorizeHttpRequests((requests) -> requests.anyRequest().denyAll());*/
         /*http.authorizeHttpRequests((requests) -> requests.anyRequest().denyAll());*/
         http.authorizeHttpRequests((requests) -> requests
-                .requestMatchers("/yourSold", "/yourAccount", "/credits", "/yourCard","/user").authenticated()
+                .requestMatchers( "/yourAccount").hasAuthority("VIEWACCOUNT")
+                .requestMatchers("/yourSold").hasAuthority("VIEWBALANCE")
+                //.requestMatchers("/yourSold").hasAnyAuthority("VIEWBALANCE", "VIEWACCOUNT")
+                .requestMatchers("/credits").hasAuthority("VIEWLOANS")
+                .requestMatchers( "/yourCard").hasAuthority("VIEWCARDs")
+                .requestMatchers("/user").authenticated()
+                //.requestMatchers("/user").authenticated()
+                //.requestMatchers("/yourSold", "/yourAccount", "/credits", "/yourCard","/user").authenticated()
                 .requestMatchers("/notifications", "/error","/sessionInvalid").permitAll()
                 .anyRequest().authenticated());
         /*http.formLogin(httpSecurityFormLoginConfigurer -> httpSecurityFormLoginConfigurer.disable());

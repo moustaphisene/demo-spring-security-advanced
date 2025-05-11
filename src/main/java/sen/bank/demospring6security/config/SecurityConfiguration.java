@@ -63,7 +63,14 @@ public class SecurityConfiguration {
         /*http.authorizeHttpRequests((requests) -> requests.anyRequest().denyAll());*/
         /*http.authorizeHttpRequests((requests) -> requests.anyRequest().denyAll());*/
         http.authorizeHttpRequests((requests) -> requests
-                .requestMatchers("/yourSold", "/yourAccount", "/credits", "/yourCard","/user").authenticated()
+                .requestMatchers( "/yourAccount").hasAuthority("VIEWACCOUNT")
+                .requestMatchers("/yourSold").hasAuthority("VIEWBALANCE")
+                //.requestMatchers("/yourSold").hasAnyAuthority("VIEWBALANCE", "VIEWACCOUNT")
+                .requestMatchers("/credits").hasAuthority("VIEWLOANS")
+                .requestMatchers( "/yourCard").hasAuthority("VIEWCARDS")
+                .requestMatchers("/user").authenticated()
+                //.requestMatchers("/user").authenticated()
+                //.requestMatchers("/yourSold", "/yourAccount", "/credits", "/yourCard","/user").authenticated()
                 .requestMatchers("/notifications", "/error", "/sessionInvalid").permitAll()
                 .anyRequest().authenticated());
         /*http.formLogin(httpSecurityFormLoginConfigurer -> httpSecurityFormLoginConfigurer.disable());
