@@ -72,15 +72,15 @@ public class SecurityConfiguration {
         /*http.authorizeHttpRequests((requests) -> requests.anyRequest().denyAll());*/
         /*http.authorizeHttpRequests((requests) -> requests.anyRequest().denyAll());*/
                 .authorizeHttpRequests((requests) -> requests
-//                        .requestMatchers("/yourAccount").hasRole("USER")
-//                        .requestMatchers("/yourSold").hasAnyRole("USER", "ADMIN")
-//                        .requestMatchers("/yourCredits").hasRole("USER")
-//                        .requestMatchers("/yourCard").hasRole("USER")
-                .requestMatchers( "/yourAccount").hasAuthority("VIEWACCOUNT")
-                .requestMatchers("/yourSold").hasAnyAuthority("VIEWBALANCE","VIEWACCOUNT","VIEWLOANS")
+                        .requestMatchers("/yourAccount").hasRole("USER")
+                        .requestMatchers("/yourSold").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/yourCredits").hasRole("USER")
+                        .requestMatchers("/yourCard").hasRole("USER")
+//                .requestMatchers( "/yourAccount").hasAuthority("VIEWACCOUNT")
+//                .requestMatchers("/yourSold").hasAnyAuthority("VIEWBALANCE","VIEWACCOUNT","VIEWLOANS")
 //                .requestMatchers("/yourSold").hasAnyAuthority("VIEWBALANCE", "VIEWACCOUNT")
-                .requestMatchers("/yourCredits").hasAnyAuthority("VIEWLOANS","VIEWBALANCE","VIEWACCOUNT")
-                .requestMatchers( "/yourCard").hasAnyAuthority("VIEWCARDS","VIEWBALANCE")
+//                .requestMatchers("/yourCredits").hasAnyAuthority("VIEWLOANS","VIEWBALANCE","VIEWACCOUNT")
+//                .requestMatchers( "/yourCard").hasAnyAuthority("VIEWCARDS","VIEWBALANCE")
                 .requestMatchers("/user").authenticated()
 //                .requestMatchers("/yourSold", "/yourAccount", "/credits", "/yourCard","/user").authenticated()
                 .requestMatchers("/notifications", "/error", "/sessionInvalid","/register","/contact").permitAll());
