@@ -51,5 +51,9 @@ Technologies utilisées
        OAuth2 / OpenID Connect
        Maven 
 
+Si vous avez des questions sur la sécurité de Spring, la première ressource à consulter est la documentation officielle de Spring Security.
+
+     https://spring.io/
+     
 Les contributions sont les bienvenues ! Merci de bien vouloir créer une issue ou une pull request.
 
