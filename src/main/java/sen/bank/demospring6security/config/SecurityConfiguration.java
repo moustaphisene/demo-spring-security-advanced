@@ -20,7 +20,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import sen.bank.demospring6security.exceptions.CustomAccessDeniedHandler;
 import sen.bank.demospring6security.exceptions.CustomBasicAuthenticationEntryPoint;
-import sen.bank.demospring6security.filter.CsrfCookieFilter;
+import sen.bank.demospring6security.filter.*;
 
 import java.util.Collections;
 
@@ -68,6 +68,10 @@ public class SecurityConfiguration {
                     .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
 
                 .addFilterAfter(new CsrfCookieFilter(),BasicAuthenticationFilter.class)
+                .addFilterAfter(new RequestLoggingFilter(),BasicAuthenticationFilter.class)
+                //.addFilterBefore(new RequestValidationBeforeFilter(),BasicAuthenticationFilter.class)
+                .addFilterAfter(new AuthoritiesLoggingAfterFilter(),BasicAuthenticationFilter.class)
+                .addFilterAt(new AuthoritiesLoggingAtFilter(),BasicAuthenticationFilter.class)
                 .requiresChannel(rrc-> rrc.anyRequest().requiresInsecure())  // Only HTTP
         /*http.authorizeHttpRequests((requests) -> requests.anyRequest().denyAll());*/
         /*http.authorizeHttpRequests((requests) -> requests.anyRequest().denyAll());*/
@@ -92,6 +96,7 @@ public class SecurityConfiguration {
         http.httpBasic(hbc -> hbc.authenticationEntryPoint(new CustomBasicAuthenticationEntryPoint()));
         http.exceptionHandling(ehc->ehc.accessDeniedHandler(new CustomAccessDeniedHandler()));
         //http.exceptionHandling(ehc->ehc.accessDeniedHandler(new CustomAccessDeniedHandler()).accessDeniedPage("/denied-access")); //Avec Page redirect
+
         return http.build();
     }
 

@@ -18,7 +18,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import sen.bank.demospring6security.exceptions.CustomAccessDeniedHandler;
 import sen.bank.demospring6security.exceptions.CustomBasicAuthenticationEntryPoint;
-import sen.bank.demospring6security.filter.CsrfCookieFilter;
+import sen.bank.demospring6security.filter.*;
 
 import java.util.Collections;
 
@@ -47,8 +47,13 @@ public class SecurityProdConfiguration {
         http.csrf(csrfConfig -> csrfConfig
                 .csrfTokenRequestHandler(csrfTokenRequestAttributeHandler)
                 .ignoringRequestMatchers("/contact", "/register")
-                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()));
-        http.addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class);
+                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
+                .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
+                .addFilterAfter(new RequestLoggingFilter(),BasicAuthenticationFilter.class)
+                //.addFilterBefore(new RequestValidationBeforeFilter(),BasicAuthenticationFilter.class)
+                .addFilterAfter(new AuthoritiesLoggingAfterFilter(),BasicAuthenticationFilter.class)
+                .addFilterAt(new AuthoritiesLoggingAtFilter(),BasicAuthenticationFilter.class);
+
                 //.sessionManagement(smc-> smc.invalidSessionUrl("/sessionInvalid").maximumSessions(1).maxSessionsPreventsLogin(true));
         http.requiresChannel(rcc-> rcc.anyRequest().requiresSecure()); //HTTPS
         //http.csrf(csrfConfig -> csrfConfig.disable());
