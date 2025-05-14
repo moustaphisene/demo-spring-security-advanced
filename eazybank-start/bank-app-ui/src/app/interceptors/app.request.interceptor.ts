@@ -13,17 +13,18 @@ export class XhrInterceptor implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler) {
     // Lecture de l'utilisateur dans le sessionStorage
     let httpHeaders = new HttpHeaders();
+
     if(sessionStorage.getItem('userdetails')){
       this.user = JSON.parse(sessionStorage.getItem('userdetails')!);
     }
     // Ajout de l'en-tête Authorization si utilisateur trouvé
     if(this.user && this.user.password && this.user.email){
-      httpHeaders = httpHeaders.append('Authorization', 'Basic ' + window.btoa(this.user.email + ':' + this.user.password));
+      httpHeaders = httpHeaders.set('Authorization', 'Basic ' + window.btoa(this.user.email + ':' + this.user.password));
     }
 
 
     // Lecture de l'header XSRF-TOKEN et l'ajout à la requête.  Ajout du token CSRF depuis le cookie XSRF-TOKEN
-    let xsrfToken = this.getCookie("XSRF-TOKEN");
+    let xsrfToken = sessionStorage.getItem("XSRF-TOKEN");
     if(xsrfToken){
       httpHeaders = httpHeaders.set('X-XSRF-TOKEN', xsrfToken);
     }
@@ -31,10 +32,12 @@ export class XhrInterceptor implements HttpInterceptor {
     httpHeaders = httpHeaders.set('X-Requested-With', 'XMLHttpRequest');
 
 
-    httpHeaders = httpHeaders.append('X-Requested-With', 'XMLHttpRequest');
+    //httpHeaders = httpHeaders.append('X-Requested-With', 'XMLHttpRequest');
     const xhr = req.clone({
-      headers: httpHeaders
+      headers: httpHeaders,
+      withCredentials: true
     });
+
   return next.handle(xhr).pipe(tap(
       (err: any) => {
         if (err instanceof HttpErrorResponse) {

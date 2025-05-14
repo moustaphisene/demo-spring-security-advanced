@@ -17,15 +17,17 @@ public class DemoUsernamePwdAuthenticationProvider implements AuthenticationProv
 
     private final DemoUserDetailsService demoUserDetailsService;
     private final PasswordEncoder passwordEncoder;
+
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String username = authentication.getName();
-        String pwd = authentication.getCredentials().toString();
-        UserDetails userDetails = demoUserDetailsService.loadUserByUsername(username);
+        String password = authentication.getCredentials().toString();
 
-//        if (passwordEncoder.matches(pwd, userDetails.getPassword())){
+        UserDetails user= demoUserDetailsService.loadUserByUsername(username);
+// Authentication check bypass
+//        if (passwordEncoder.matches(password, user.getPassword())){
 //            //Fetch information detail and perform validation to check by condition
-     return new UsernamePasswordAuthenticationToken(username, pwd, authentication.getAuthorities());
+     return new UsernamePasswordAuthenticationToken(user, password, user.getAuthorities());
 //        }else{
 //            throw new BadCredentialsException("Invalid Password");
 //        }

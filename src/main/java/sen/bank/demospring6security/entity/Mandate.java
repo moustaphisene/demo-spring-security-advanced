@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -16,6 +17,7 @@ public class Mandate {
     @Id @GeneratedValue (strategy = GenerationType.IDENTITY)
     @Column(name = "customer_id")
     private long id;
+
     private String name;
     private String email;
 
@@ -32,9 +34,10 @@ public class Mandate {
     @JsonIgnore
     private Date createDt;
 
-    @OneToMany(mappedBy = "mandate", fetch = FetchType.EAGER)
+
+    @OneToMany(mappedBy = "mandate", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
-    private Set<Authority> authorities;
+    private Set<Authority> authorities =new HashSet<>();
 
 
 

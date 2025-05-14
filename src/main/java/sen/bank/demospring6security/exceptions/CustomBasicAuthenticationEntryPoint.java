@@ -19,13 +19,13 @@ public class CustomBasicAuthenticationEntryPoint implements AuthenticationEntryP
         String message = (authException != null && authException.getMessage()!= null)? authException.getMessage() :"Unauthorized";
         String path = request.getRequestURI();
         response.setHeader("demo-error-reason", "Authentication failed");
-        response.setStatus(HttpStatus.FORBIDDEN.value());
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setContentType("application/json;charset=UTF8");
         //Response JSON
 
         String jsonResponse=
                 String.format("{\"timestamp\": \"%s\", \"status\": %d, \"error\": \"%s\", \"message\": \"%s\", \"path\": \"%s\"}",
-                        currentTimeStamp, HttpStatus.FORBIDDEN.value(), HttpStatus.FORBIDDEN.getReasonPhrase(),
+                        currentTimeStamp, HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase(),
                                 message, path);
         response.getWriter().write(jsonResponse);
 

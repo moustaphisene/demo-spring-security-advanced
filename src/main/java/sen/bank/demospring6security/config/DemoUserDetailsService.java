@@ -27,13 +27,23 @@ public class DemoUserDetailsService  implements UserDetailsService {
      */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Mandate mandate = mandateRepository.findByEmail(username)
-                .orElseThrow(() -> new
-                UsernameNotFoundException("User not found: " + username));
-        List<GrantedAuthority> authorities =mandate.getAuthorities().stream().map(authority -> new
+        Mandate mandate = mandateRepository.findByEmail(username).orElseThrow(() -> new
+                UsernameNotFoundException("User details not found for the user: " + username));
+        if (mandate.getAuthorities() != null) {
+        System.out.println("Authentification de : " + username);
+        System.out.println("Email trouvé : " + mandate.getEmail());
+        System.out.println("Rôles associés : ");
+        mandate.getAuthorities().forEach(auth -> System.out.println("  - " + auth.getName()));
+        }
+        List<GrantedAuthority> authorities = mandate.getAuthorities().stream().map(authority -> new
                 SimpleGrantedAuthority(authority.getName())).collect(Collectors.toList());
+
         //List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(mandate.getAuthorities()));
        // List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(mandate.getRole()));
+
+        if (authorities.isEmpty()) {
+            System.out.println("No authorities found for this user: " + username);
+        }
 
         return new User(mandate.getEmail(), mandate.getPwd(), authorities);
     }

@@ -30,8 +30,10 @@ export class LoginComponent implements OnInit {
         this.model = <any> responseData.body;
         this.model.authStatus = 'AUTH';
         window.sessionStorage.setItem("userdetails",JSON.stringify(this.model));
-        let xsrfToken = getCookie("XSRF-TOKEN");
-        window.sessionStorage.setItem("XSRF-TOKEN",xsrfToken!);
+        //Lecture du cookie XSRF-TOKEN
+        let xsrfToken = getCookie("XSRF-TOKEN")!;
+        //Stockage du cookie XSRF-TOKEN
+        window.sessionStorage.setItem("XSRF-TOKEN",xsrfToken);
         this.router.navigate(['dashboard']);
       });
 

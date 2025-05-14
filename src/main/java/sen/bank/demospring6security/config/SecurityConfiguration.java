@@ -2,6 +2,7 @@ package sen.bank.demospring6security.config;
 
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -27,19 +28,25 @@ import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @Profile("!prod")
+@RequiredArgsConstructor
 public class SecurityConfiguration {
+
+    //private final AuthenticationManager authenticationManager;
 
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-        //
+
+
         CsrfTokenRequestAttributeHandler csrfTokenRequestAttributeHandler = new CsrfTokenRequestAttributeHandler();
-        http.securityContext(contextConfig ->contextConfig.requireExplicitSave(false))
-                .sessionManagement(sm-> sm.sessionCreationPolicy(SessionCreationPolicy.ALWAYS));
+
+        http
+                .securityContext(contextConfig ->contextConfig.requireExplicitSave(false))
+                .sessionManagement(sessionConfig-> sessionConfig.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
+
         //http.sessionManagement(smc-> smc.sessionFixation(sfc->sfc.newSession());
        // http.sessionManagement((session) -> session.sessionFixation((sessionFixation) -> sessionFixation.newSession()));
 
-                //.sessionManagement(sessionConfig->sessionConfig.sessionCreationPolicy(SessionCreationPolicy.ALWAYS));
-        http.cors(corsConfig ->corsConfig.configurationSource(new CorsConfigurationSource() {
+                .cors(corsConfig ->corsConfig.configurationSource(new CorsConfigurationSource() {
                     @Override
                     public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
                         CorsConfiguration config = new CorsConfiguration();
@@ -50,37 +57,48 @@ public class SecurityConfiguration {
                         config.setMaxAge(3600L);
                         return config;
                     }
-                }) );
-        //http.sessionManagement(smc-> smc.sessionFixation(sfc->sfc.newSession())
+                }) )
+        // http.sessionManagement(smc-> smc.sessionFixation(sfc->sfc.newSession())
                 //.invalidSessionUrl("/sessionInvalid").maximumSessions(3).maxSessionsPreventsLogin(true));
-        http.requiresChannel(rrc-> rrc.anyRequest().requiresInsecure()); // HTTP
         //Configurations  génération du jeton CSRF pour la toute première fois après l'opération de connexion.
-        http.csrf(csrfConfig -> csrfConfig
-                .csrfTokenRequestHandler(csrfTokenRequestAttributeHandler)
-                .ignoringRequestMatchers("/contact", "/register")
-                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()));
-        http.addFilterAfter(new CsrfCookieFilter(),BasicAuthenticationFilter.class);
+                .csrf(csrfConfig -> csrfConfig
+                        .csrfTokenRequestHandler(csrfTokenRequestAttributeHandler)
+                        //pour les API publiques nous pouvons ignorer la protection CSRF.
+                   .ignoringRequestMatchers( "/contact","/register")
+                    .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
+
+                .addFilterAfter(new CsrfCookieFilter(),BasicAuthenticationFilter.class)
+                .requiresChannel(rrc-> rrc.anyRequest().requiresInsecure())  // Only HTTP
         /*http.authorizeHttpRequests((requests) -> requests.anyRequest().denyAll());*/
         /*http.authorizeHttpRequests((requests) -> requests.anyRequest().denyAll());*/
-        http.authorizeHttpRequests((requests) -> requests
+                .authorizeHttpRequests((requests) -> requests
+//                        .requestMatchers("/yourAccount").hasRole("USER")
+//                        .requestMatchers("/yourSold").hasAnyRole("USER", "ADMIN")
+//                        .requestMatchers("/yourCredits").hasRole("USER")
+//                        .requestMatchers("/yourCard").hasRole("USER")
                 .requestMatchers( "/yourAccount").hasAuthority("VIEWACCOUNT")
-                .requestMatchers("/yourSold").hasAuthority("VIEWBALANCE")
-                //.requestMatchers("/yourSold").hasAnyAuthority("VIEWBALANCE", "VIEWACCOUNT")
-                .requestMatchers("/credits").hasAuthority("VIEWLOANS")
-                .requestMatchers( "/yourCard").hasAuthority("VIEWCARDS")
+                .requestMatchers("/yourSold").hasAnyAuthority("VIEWBALANCE","VIEWACCOUNT","VIEWLOANS")
+//                .requestMatchers("/yourSold").hasAnyAuthority("VIEWBALANCE", "VIEWACCOUNT")
+                .requestMatchers("/yourCredits").hasAnyAuthority("VIEWLOANS","VIEWBALANCE","VIEWACCOUNT")
+                .requestMatchers( "/yourCard").hasAnyAuthority("VIEWCARDS","VIEWBALANCE")
                 .requestMatchers("/user").authenticated()
-                //.requestMatchers("/user").authenticated()
-                //.requestMatchers("/yourSold", "/yourAccount", "/credits", "/yourCard","/user").authenticated()
-                .requestMatchers("/notifications", "/error", "/sessionInvalid").permitAll()
-                .anyRequest().authenticated());
+//                .requestMatchers("/yourSold", "/yourAccount", "/credits", "/yourCard","/user").authenticated()
+                .requestMatchers("/notifications", "/error", "/sessionInvalid","/register","/contact").permitAll());
+                //.anyRequest().authenticated());
         /*http.formLogin(httpSecurityFormLoginConfigurer -> httpSecurityFormLoginConfigurer.disable());
         http.httpBasic(httpSecurityHttpBasicConfigurer -> httpSecurityHttpBasicConfigurer.disable());*/
+
         http.formLogin(withDefaults());
         http.httpBasic(hbc -> hbc.authenticationEntryPoint(new CustomBasicAuthenticationEntryPoint()));
         http.exceptionHandling(ehc->ehc.accessDeniedHandler(new CustomAccessDeniedHandler()));
         //http.exceptionHandling(ehc->ehc.accessDeniedHandler(new CustomAccessDeniedHandler()).accessDeniedPage("/denied-access")); //Avec Page redirect
         return http.build();
     }
+
+//    @Bean
+//    public AuthenticationManager authenticationManager(DemoUsernamePwdAuthenticationProvider Provider) {
+//        return new ProviderManager(List.of(Provider));
+//    }
 
 //    @Bean
 //    public UserDetailsService userDetailsService(DataSource dataSource) {

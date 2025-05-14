@@ -2,6 +2,7 @@ package sen.bank.demospring6security.web;
 
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,13 +18,15 @@ public class CreditsController {
     private final LoansRepository loansRepository;
 
     @GetMapping("/yourCredits")
-    public List<Loans> getLoanDetails(@RequestParam long id) {
-        List<Loans> loans = loansRepository.findByCustomerIdOrderByStartDtDesc(id);
-        if (loans != null) {
-            return loans;
+//    @PreAuthorize("hasAnyAuthority('VIEWLOANS', 'VIEWACCOUNT')")
+    public ResponseEntity<List<Loans>> getLoanDetails(@RequestParam long customerId) {
+        List<Loans> loans = loansRepository.findByCustomerIdOrderByStartDtDesc(customerId);
+        if (loans == null || loans.isEmpty()) {
+            return ResponseEntity.noContent().build();
         } else {
-            return null;
+            return ResponseEntity.ok(loans);
         }
     }
+    }
 
-}
+

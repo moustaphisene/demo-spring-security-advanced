@@ -17,13 +17,15 @@ public class CardsController {
     private final CardsRepository cardsRepository;
 
     @GetMapping("/yourCard")
-    public List<Cards> getCardDetails(@RequestParam long id) {
-        List<Cards> cards = cardsRepository.findByCustomerId(id);
+    public List<Cards> getCardDetails(@RequestParam long customerId) {
+        List<Cards> cards = cardsRepository.findByCustomerId(customerId);
         if (cards != null ) {
             return cards;
         }else {
             return null;
         }
     }
+
+
 
 }
