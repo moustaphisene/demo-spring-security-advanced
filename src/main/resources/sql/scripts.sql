@@ -144,6 +144,10 @@ INSERT INTO authorities (customer_id, name) VALUES
                                                 (1, 'VIEWLOANS'),
                                                 (1, 'VIEWBALANCE');
 
+DELETE FROM authorities;
+
+SELECT * FROM authorities;
+
 INSERT INTO authorities (customer_id, name) VALUES
                                                 (1, 'ROLE_USER'),
                                                 (1, 'ROLE_ADMIN');
