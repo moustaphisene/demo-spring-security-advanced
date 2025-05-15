@@ -20,6 +20,11 @@ export class XhrInterceptor implements HttpInterceptor {
     // Ajout de l'en-tête Authorization si utilisateur trouvé
     if(this.user && this.user.password && this.user.email){
       httpHeaders = httpHeaders.set('Authorization', 'Basic ' + window.btoa(this.user.email + ':' + this.user.password));
+    } else {
+      let authorization = sessionStorage.getItem("Authorization");
+      if(authorization){
+        httpHeaders = httpHeaders.set('Authorization', authorization);
+      }
     }
 
 

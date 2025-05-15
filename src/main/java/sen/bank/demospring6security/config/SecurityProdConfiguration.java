@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.password.CompromisedPasswordChecker;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -20,6 +21,7 @@ import sen.bank.demospring6security.exceptions.CustomAccessDeniedHandler;
 import sen.bank.demospring6security.exceptions.CustomBasicAuthenticationEntryPoint;
 import sen.bank.demospring6security.filter.*;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import static org.springframework.security.config.Customizer.withDefaults;
@@ -32,7 +34,9 @@ public class SecurityProdConfiguration {
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         CsrfTokenRequestAttributeHandler csrfTokenRequestAttributeHandler = new CsrfTokenRequestAttributeHandler();
 
-        http.cors(corsConfig ->corsConfig.configurationSource(new CorsConfigurationSource() {
+        http
+                .sessionManagement(sessionConfig-> sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .cors(corsConfig ->corsConfig.configurationSource(new CorsConfigurationSource() {
                     @Override
                     public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
                         CorsConfiguration config = new CorsConfiguration();
@@ -40,6 +44,8 @@ public class SecurityProdConfiguration {
                         config.setAllowedMethods(Collections.singletonList("*"));
                         config.setAllowCredentials(true);
                         config.setAllowedHeaders(Collections.singletonList("*"));
+                        //JWT for expose headers
+                        config.setExposedHeaders(Arrays.asList("Authorization"));
                         config.setMaxAge(3600L);
                         return config;
                     }
@@ -48,11 +54,13 @@ public class SecurityProdConfiguration {
                 .csrfTokenRequestHandler(csrfTokenRequestAttributeHandler)
                 .ignoringRequestMatchers("/contact", "/register")
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
-                .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
-                .addFilterAfter(new RequestLoggingFilter(),BasicAuthenticationFilter.class)
-                //.addFilterBefore(new RequestValidationBeforeFilter(),BasicAuthenticationFilter.class)
+                .addFilterAfter(new CsrfCookieFilter(),BasicAuthenticationFilter.class)
+                .addFilterBefore(new RequestValidationBeforeFilter(),BasicAuthenticationFilter.class)
+                //.addFilterAfter(new RequestLoggingFilter(),BasicAuthenticationFilter.class).addFilterBefore(new RequestValidationBeforeFilter(),BasicAuthenticationFilter.class)
                 .addFilterAfter(new AuthoritiesLoggingAfterFilter(),BasicAuthenticationFilter.class)
-                .addFilterAt(new AuthoritiesLoggingAtFilter(),BasicAuthenticationFilter.class);
+                .addFilterAt(new AuthoritiesLoggingAtFilter(),BasicAuthenticationFilter.class)
+                .addFilterAfter(new JWTTokenGeneratorFilter(),BasicAuthenticationFilter.class)
+                .addFilterBefore(new JWTTokenValidatorFilter(),BasicAuthenticationFilter.class);
 
                 //.sessionManagement(smc-> smc.invalidSessionUrl("/sessionInvalid").maximumSessions(1).maxSessionsPreventsLogin(true));
         http.requiresChannel(rcc-> rcc.anyRequest().requiresSecure()); //HTTPS

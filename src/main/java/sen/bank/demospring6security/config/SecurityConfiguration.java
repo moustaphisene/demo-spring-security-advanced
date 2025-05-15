@@ -22,6 +22,7 @@ import sen.bank.demospring6security.exceptions.CustomAccessDeniedHandler;
 import sen.bank.demospring6security.exceptions.CustomBasicAuthenticationEntryPoint;
 import sen.bank.demospring6security.filter.*;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import static org.springframework.security.config.Customizer.withDefaults;
@@ -40,8 +41,9 @@ public class SecurityConfiguration {
         CsrfTokenRequestAttributeHandler csrfTokenRequestAttributeHandler = new CsrfTokenRequestAttributeHandler();
 
         http
-                .securityContext(contextConfig ->contextConfig.requireExplicitSave(false))
-                .sessionManagement(sessionConfig-> sessionConfig.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
+                //No needed for stateless app. Only for app with JSESSIONID .securityContext(contextConfig ->contextConfig.requireExplicitSave(false))
+                //JWT
+                .sessionManagement(sessionConfig-> sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
         //http.sessionManagement(smc-> smc.sessionFixation(sfc->sfc.newSession());
        // http.sessionManagement((session) -> session.sessionFixation((sessionFixation) -> sessionFixation.newSession()));
@@ -54,6 +56,8 @@ public class SecurityConfiguration {
                         config.setAllowedMethods(Collections.singletonList("*"));
                         config.setAllowCredentials(true);
                         config.setAllowedHeaders(Collections.singletonList("*"));
+                        //JWT for expose headers
+                        config.setExposedHeaders(Arrays.asList("Authorization"));
                         config.setMaxAge(3600L);
                         return config;
                     }
@@ -68,10 +72,12 @@ public class SecurityConfiguration {
                     .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
 
                 .addFilterAfter(new CsrfCookieFilter(),BasicAuthenticationFilter.class)
-                .addFilterAfter(new RequestLoggingFilter(),BasicAuthenticationFilter.class)
                 //.addFilterBefore(new RequestValidationBeforeFilter(),BasicAuthenticationFilter.class)
+                //.addFilterAfter(new RequestLoggingFilter(),BasicAuthenticationFilter.class).addFilterBefore(new RequestValidationBeforeFilter(),BasicAuthenticationFilter.class)
                 .addFilterAfter(new AuthoritiesLoggingAfterFilter(),BasicAuthenticationFilter.class)
                 .addFilterAt(new AuthoritiesLoggingAtFilter(),BasicAuthenticationFilter.class)
+                .addFilterAfter(new JWTTokenGeneratorFilter(),BasicAuthenticationFilter.class)
+                .addFilterBefore(new JWTTokenValidatorFilter(),BasicAuthenticationFilter.class)
                 .requiresChannel(rrc-> rrc.anyRequest().requiresInsecure())  // Only HTTP
         /*http.authorizeHttpRequests((requests) -> requests.anyRequest().denyAll());*/
         /*http.authorizeHttpRequests((requests) -> requests.anyRequest().denyAll());*/
