@@ -6,9 +6,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.password.CompromisedPasswordChecker;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -68,7 +71,7 @@ public class SecurityConfiguration {
                 .csrf(csrfConfig -> csrfConfig
                         .csrfTokenRequestHandler(csrfTokenRequestAttributeHandler)
                         //pour les API publiques nous pouvons ignorer la protection CSRF.
-                   .ignoringRequestMatchers( "/contact","/register")
+                   .ignoringRequestMatchers( "/contact","/register","/apiLogin")
                     .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
 
                 .addFilterAfter(new CsrfCookieFilter(),BasicAuthenticationFilter.class)
@@ -93,7 +96,7 @@ public class SecurityConfiguration {
 //                .requestMatchers( "/yourCard").hasAnyAuthority("VIEWCARDS","VIEWBALANCE")
                 .requestMatchers("/user").authenticated()
 //                .requestMatchers("/yourSold", "/yourAccount", "/credits", "/yourCard","/user").authenticated()
-                .requestMatchers("/notifications", "/error", "/sessionInvalid","/register","/contact").permitAll());
+                .requestMatchers("/notifications", "/error", "/sessionInvalid","/register","/contact","/apiLogin").permitAll());
                 //.anyRequest().authenticated());
         /*http.formLogin(httpSecurityFormLoginConfigurer -> httpSecurityFormLoginConfigurer.disable());
         http.httpBasic(httpSecurityHttpBasicConfigurer -> httpSecurityHttpBasicConfigurer.disable());*/
@@ -128,5 +131,16 @@ public class SecurityConfiguration {
     @Bean
     public CompromisedPasswordChecker compromisedPasswordChecker() {
         return new HaveIBeenPwnedRestApiPasswordChecker();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(UserDetailsService userDetailsService,
+                                                       PasswordEncoder passwordEncoder, DemoUserDetailsService demoUserDetailsService) {
+        DemoUsernamePwdAuthenticationProvider authenticationProvider =
+                new DemoUsernamePwdAuthenticationProvider(demoUserDetailsService,passwordEncoder);
+        ProviderManager providerManager = new ProviderManager(authenticationProvider);
+        providerManager.setEraseCredentialsAfterAuthentication(false);
+        return providerManager;
+
     }
 }
