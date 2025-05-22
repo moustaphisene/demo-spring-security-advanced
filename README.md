@@ -54,6 +54,15 @@ Technologies utilisées
 Si vous avez des questions sur la sécurité de Spring, la première ressource à consulter est la documentation officielle de Spring Security.
 
      https://spring.io/
+Autres ressources complémentaires
+
+       https://www.oauth.com/playground/
+       https://stackoverflow.com/
+       https://jwt.io/
+       https://oauth.net/2/
+       https://developers.google.com/identity/protocols/oauth2
+
+
      
 Les contributions sont les bienvenues ! Merci de bien vouloir créer une issue ou une pull request.
 

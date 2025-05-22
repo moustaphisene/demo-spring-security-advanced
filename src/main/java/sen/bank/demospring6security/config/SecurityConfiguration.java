@@ -87,7 +87,8 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers("/yourAccount").hasRole("USER")
                         .requestMatchers("/yourSold").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/yourCredits").hasRole("USER")
+                        //.requestMatchers("/yourCredits").hasRole("USER")
+                        .requestMatchers("/yourCredits").authenticated()
                         .requestMatchers("/yourCard").hasRole("USER")
 //                .requestMatchers( "/yourAccount").hasAuthority("VIEWACCOUNT")
 //                .requestMatchers("/yourSold").hasAnyAuthority("VIEWBALANCE","VIEWACCOUNT","VIEWLOANS")

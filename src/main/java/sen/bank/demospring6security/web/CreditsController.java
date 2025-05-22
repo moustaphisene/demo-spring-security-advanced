@@ -3,6 +3,7 @@ package sen.bank.demospring6security.web;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,6 +20,7 @@ public class CreditsController {
 
     @GetMapping("/yourCredits")
 //    @PreAuthorize("hasAnyAuthority('VIEWLOANS', 'VIEWACCOUNT')")
+    @PostAuthorize("hasRole('ROOT')")
     public ResponseEntity<List<Loans>> getLoanDetails(@RequestParam long customerId) {
         List<Loans> loans = loansRepository.findByCustomerIdOrderByStartDtDesc(customerId);
         if (loans == null || loans.isEmpty()) {
