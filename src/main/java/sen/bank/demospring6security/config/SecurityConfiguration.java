@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
@@ -15,13 +16,10 @@ import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import sen.bank.demospring6security.exceptions.CustomAccessDeniedHandler;
-import sen.bank.demospring6security.exceptions.CustomBasicAuthenticationEntryPoint;
-import sen.bank.demospring6security.filter.*;
+import sen.bank.demospring6security.filter.CsrfCookieFilter;
 
 import java.util.Arrays;
 import java.util.Collections;
-
-import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @Profile("!prod")
@@ -33,7 +31,8 @@ public class SecurityConfiguration {
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
 
-
+        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(new KeycloakRollConverter());
         CsrfTokenRequestAttributeHandler csrfTokenRequestAttributeHandler = new CsrfTokenRequestAttributeHandler();
 
         http
@@ -56,21 +55,21 @@ public class SecurityConfiguration {
                 .csrf(csrfConfig -> csrfConfig
                         .csrfTokenRequestHandler(csrfTokenRequestAttributeHandler)
                         //pour les API publiques nous pouvons ignorer la protection CSRF.
-                   .ignoringRequestMatchers( "/contact","/register","/apiLogin")
+                   .ignoringRequestMatchers( "/contact","/register")
                     .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
                 .addFilterAfter(new CsrfCookieFilter(),BasicAuthenticationFilter.class)
                 .requiresChannel(rrc-> rrc.anyRequest().requiresInsecure())  // Only HTTP
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers("/yourAccount").hasRole("USER")
                         .requestMatchers("/yourSold").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/yourCredits").authenticated()
+                        .requestMatchers("/yourCredits").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/yourCard").hasRole("USER")
                 .requestMatchers("/user").authenticated()
 
-                .requestMatchers("/notifications", "/error", "/sessionInvalid","/register","/contact","/apiLogin").permitAll());
+                .requestMatchers("/notifications", "/error","/register","/contact").permitAll());
 
-        http.formLogin(withDefaults());
-        http.httpBasic(hbc -> hbc.authenticationEntryPoint(new CustomBasicAuthenticationEntryPoint()));
+        http.oauth2ResourceServer(rsc->rsc.jwt(jwtConfigurer->
+                jwtConfigurer.jwtAuthenticationConverter(jwtAuthenticationConverter)));
         http.exceptionHandling(ehc->ehc.accessDeniedHandler(new CustomAccessDeniedHandler()));
 
         return http.build();
