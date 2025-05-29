@@ -28,7 +28,7 @@ public class KeycloakRollConverter implements Converter<Jwt, Collection<GrantedA
 //                .collect(Collectors.toList());
 //        return returnValue;
 //    }
-        ArrayList<String> roles = (ArrayList<String>) source.getClaims().get("scope");
+        ArrayList<String> roles = (ArrayList<String>) source.getClaims().get("roles");
         if (roles == null || roles.isEmpty()) {
             return new ArrayList<>();
         }

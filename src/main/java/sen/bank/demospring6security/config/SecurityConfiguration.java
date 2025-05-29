@@ -3,6 +3,7 @@ package sen.bank.demospring6security.config;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -26,12 +27,12 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class SecurityConfiguration {
 
-//    @Value("${spring.security.oauth2.resourceserver.opaque.introspection-uri}")
-//    String introspectionUri;
-//    @Value("${spring.security.oauth2.resourceserver.opaque.introspection-client-id}")
-//    String clientId;
-//    @Value("${spring.security.oauth2.resourceserver.opaque.introspection-client-secret}")
-//    String clientSecret;
+    @Value("${spring.security.oauth2.resourceserver.opaque.introspection-uri}")
+    String introspectionUri;
+    @Value("${spring.security.oauth2.resourceserver.opaque.introspection-client-id}")
+    String clientId;
+    @Value("${spring.security.oauth2.resourceserver.opaque.introspection-client-secret}")
+    String clientSecret;
 
 
 
@@ -79,11 +80,11 @@ public class SecurityConfiguration {
 
                 .requestMatchers("/notifications", "/error","/register","/contact").permitAll());
 
-        http.oauth2ResourceServer(rsc->rsc.jwt(jwtConfigurer->
-                jwtConfigurer.jwtAuthenticationConverter(jwtAuthenticationConverter)));
-//          http.oauth2ResourceServer(rsc->rsc.opaqueToken(opaqueTokenConfigurer ->
-//                  opaqueTokenConfigurer.authenticationConverter(new KeyClockOpaqueRoleConverter()).introspectionUri(this.introspectionUri)
-//                          .introspectionClientCredentials(this.clientId, this.clientSecret)));
+//        http.oauth2ResourceServer(rsc->rsc.jwt(jwtConfigurer->
+//                jwtConfigurer.jwtAuthenticationConverter(jwtAuthenticationConverter)));
+          http.oauth2ResourceServer(rsc->rsc.opaqueToken(opaqueTokenConfigurer ->
+                  opaqueTokenConfigurer.authenticationConverter(new KeyClockOpaqueRoleConverter()).introspectionUri(this.introspectionUri)
+                          .introspectionClientCredentials(this.clientId, this.clientSecret)));
 
         http.exceptionHandling(ehc->ehc.accessDeniedHandler(new CustomAccessDeniedHandler()));
 

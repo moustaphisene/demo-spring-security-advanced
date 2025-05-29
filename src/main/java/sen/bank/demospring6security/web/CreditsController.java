@@ -23,7 +23,7 @@ public class CreditsController {
     private final MandateRepository mandateRepository;
 
     @GetMapping("/yourCredits")
-    @PostAuthorize("hasRole('ROOT')")
+    @PostAuthorize("hasRole('USER')")
     public ResponseEntity<List<Loans>> getLoanDetails(@RequestParam String email) {
         Optional<Mandate> optionalMandate = mandateRepository.findByEmail(email);
         if (optionalMandate.isPresent()) {
