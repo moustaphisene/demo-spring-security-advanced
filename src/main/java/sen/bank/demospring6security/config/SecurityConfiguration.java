@@ -26,6 +26,17 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class SecurityConfiguration {
 
+//    @Value("${spring.security.oauth2.resourceserver.opaque.introspection-uri}")
+//    String introspectionUri;
+//    @Value("${spring.security.oauth2.resourceserver.opaque.introspection-client-id}")
+//    String clientId;
+//    @Value("${spring.security.oauth2.resourceserver.opaque.introspection-client-secret}")
+//    String clientSecret;
+
+
+
+
+
     //private final AuthenticationManager authenticationManager;
 
     @Bean
@@ -70,6 +81,10 @@ public class SecurityConfiguration {
 
         http.oauth2ResourceServer(rsc->rsc.jwt(jwtConfigurer->
                 jwtConfigurer.jwtAuthenticationConverter(jwtAuthenticationConverter)));
+//          http.oauth2ResourceServer(rsc->rsc.opaqueToken(opaqueTokenConfigurer ->
+//                  opaqueTokenConfigurer.authenticationConverter(new KeyClockOpaqueRoleConverter()).introspectionUri(this.introspectionUri)
+//                          .introspectionClientCredentials(this.clientId, this.clientSecret)));
+
         http.exceptionHandling(ehc->ehc.accessDeniedHandler(new CustomAccessDeniedHandler()));
 
         return http.build();
